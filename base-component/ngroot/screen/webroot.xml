@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a 
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-1.6.xsd"
+        require-authentication="false">
+    <!-- NOTE: require-authentication=false is required to allow sub-screens to decide, and because the Login screen is below this. -->
+    <always-actions>
+        <set field="html_scripts" from="new LinkedHashSet()"/>
+        <set field="html_inline_scripts" from="new LinkedHashSet()"/>
+        <set field="footer_scripts" from="new LinkedHashSet()"/>
+
+        <!-- See WebrootThemeData.xml for CSS references -->
+        <set field="html_stylesheets" from="new LinkedHashSet()"/>
+    </always-actions>
+    <subscreens default-item="spapps">
+        <subscreens-item name="echopath" location="component://webroot/screen/webroot/echopath.xml" menu-include="false"/>
+        <subscreens-item name="rest" location="component://webroot/screen/webroot/rest.xml" menu-include="false"/>
+        <subscreens-item name="rpc" location="component://webroot/screen/webroot/rpc.xml" menu-include="false"/>
+        <subscreens-item name="status" location="component://webroot/screen/webroot/status.xml" menu-include="false"/>
+
+        <!-- if the client is an iPad, default to the ipad subscreens item instead of apps, but allow either to be used explicitly -->
+        <!-- <conditional-default condition="(ec.web.request.getHeader('User-Agent')?:'').matches('.*iPad.*')" item="ipad"/> -->
+
+        <!-- refer to the UNDECORATED (or self-decorating) app roots here -->
+    </subscreens>
+    <widgets>
+        <render-mode>
+            <text type="html" location="component://webroot/screen/includes/Header.html.ftl" no-boundary-comment="true"/>
+            <text type="xsl-fo" location="component://webroot/screen/includes/Header.xsl-fo.ftl" no-boundary-comment="true"/>
+        </render-mode>
+
+        <subscreens-active/>
+
+        <render-mode>
+            <text type="html" location="component://webroot/screen/includes/Footer.html.ftl"/>
+            <text type="xsl-fo"><![CDATA[${sri.getAfterScreenWriterText()}</fo:flow></fo:page-sequence></fo:root>]]></text>
+        </render-mode>
+    </widgets>
+</screen>

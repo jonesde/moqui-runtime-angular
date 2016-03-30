@@ -52,7 +52,7 @@
 
     <webapp-list>
         <webapp name="webroot" http-port="" https-enabled="false">
-            <root-screen host=".*" location="component://webroot/screen/webroot.xml"/>
+            <root-screen host=".*" location="component://ngroot/screen/webroot.xml"/>
         </webapp>
     </webapp-list>
 

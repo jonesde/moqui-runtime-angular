@@ -24,6 +24,10 @@
 <#list sri.getThemeValues("STRT_SCRIPT") as scriptLocation>
     <script language="javascript" src="${sri.buildUrl(scriptLocation).url}" type="text/javascript"></script>
 </#list>
+<#-- Inline Scripts -->
+<#list html_inline_scripts?if_exists as scriptText>
+    <script>${scriptText}</script>
+</#list>
 <#-- Icon -->
 <#list sri.getThemeValues("STRT_SHORTCUT_ICON") as iconLocation>
     <link rel="shortcut icon" href="${sri.buildUrl(iconLocation).url}">

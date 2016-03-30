@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a 
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<entity-facade-xml type="seed">
+    <moqui.basic.Enumeration description="Angular 2 Internal Applications" enumId="NG_STT_INTERNAL" enumTypeId="ScreenThemeType" enumCode="NG_DEFAULT"/>
+    <moqui.screen.ScreenTheme screenThemeId="NG_DEFAULT" screenThemeTypeEnumId="NG_STT_INTERNAL"
+                              description="Moqui Angular 2 Default Theme"/>
+
+    <!-- Default Theme (note that ScreenTheme record defined in ScreenEntities.xml) -->
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="10" resourceTypeEnumId="STRT_STYLESHEET"
+            resourceValue="/lib/jquery/themes/smoothness/theme.css"/>
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="20" resourceTypeEnumId="STRT_STYLESHEET"
+            resourceValue="/css/webroot-theme.css"/>
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="100" resourceTypeEnumId="STRT_HEADER_LOGO"
+            resourceValue="/images/MoquiLogoSmall.png"/>
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="101" resourceTypeEnumId="STRT_SHORTCUT_ICON"
+            resourceValue="/moqui.ico"/>
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="102" resourceTypeEnumId="STRT_BODY_CLASS"
+            resourceValue="bg-light"/>
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="200" resourceTypeEnumId="STRT_FOOTER_ITEM">
+        <resourceValue><![CDATA[<p><a href="http://www.moqui.org/" target="_blank">${ec.l10n.localize('Built on Moqui Framework 1.6.3')}</a></p>]]></resourceValue>
+    </moqui.screen.ScreenThemeResource>
+    <moqui.screen.ScreenThemeResource screenThemeId="NG_DEFAULT" sequenceNum="201" resourceTypeEnumId="STRT_FOOTER_ITEM">
+        <resourceValue><![CDATA[<p><a href="/apps/ScreenTree">${ec.l10n.localize('Site Map')}</a></p>]]></resourceValue>
+    </moqui.screen.ScreenThemeResource>
+</entity-facade-xml>

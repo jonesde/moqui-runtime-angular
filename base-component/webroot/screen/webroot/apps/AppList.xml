@@ -19,45 +19,55 @@ along with this software (see the LICENSE.md file). If not, see
     <actions>
         <set field="appsLocation" from="sri.getRootScreenDef().getSubscreensItem('apps').location"/>
         <set field="currentScreenDef" from="sri.sfi.getScreenDefinition(appsLocation)"/>
+        <set field="appInfoList" from="[]"/>
+        <iterate list="currentScreenDef.getMenuSubscreensItems()" entry="currentSubscreensItem">
+            <set field="currentScreenDef" from="sri.sfi.getScreenDefinition(currentSubscreensItem.location)"/>
+            <set field="currentScreenPath" value="/apps/${currentSubscreensItem.name}"/>
+            <set field="currentUrlInstance" from="sri.buildUrl(currentScreenPath)"/>
+            <if condition="currentScreenDef != null &amp;&amp; !currentScreenDef.getParameterMap() &amp;&amp; currentUrlInstance?.isPermitted()">
+                <set field="menuImageIcon" from="null"/>
+                <set field="menuImageUrl" from="null"/>
+                <set field="menuImageType" from="currentUrlInstance.sui.menuImageType"/>
+                <if condition="menuImageType == 'icon'"><then>
+                    <set field="menuImageIcon" from="currentUrlInstance.sui.menuImage"/>
+                </then><else-if condition="menuImageType == 'url-plain'">
+                    <set field="menuImageUrl" from="currentUrlInstance.sui.menuImage"/>
+                </else-if><else>
+                    <set field="menuImageUrl" from="sri.buildUrl(currentUrlInstance.sui.menuImage).url"/>
+                </else></if>
+                <script>appInfoList.add([url:currentUrlInstance.url, imageIcon:menuImageIcon, imageUrl:menuImageUrl,
+                                         title:ec.resource.expand(currentSubscreensItem.menuTitle, "")])</script>
+            </if>
+        </iterate>
     </actions>
     <widgets>
         <container style="text-center">
             <label text="Choose an Application" type="h2"/>
 
-            <section-iterate name="ScreenNestedSection" list="currentScreenDef.getMenuSubscreensItems()" entry="currentSubscreensItem">
-                <actions>
-                    <set field="currentScreenDef" from="sri.sfi.getScreenDefinition(currentSubscreensItem.location)"/>
-                    <set field="currentScreenPath" value="/apps/${currentSubscreensItem.name}"/>
-                    <set field="currentUrlInstance" from="sri.buildUrl(currentScreenPath)"/>
-                </actions>
-                <widgets>
-                    <section name="ScreenItemRender">
-                        <condition><expression>currentScreenDef != null &amp;&amp;
-                            !currentScreenDef.getParameterMap() &amp;&amp; currentUrlInstance?.isPermitted()</expression></condition>
-                        <widgets>
-                            <render-mode><text type="html"><![CDATA[
-                                <a href="${currentUrlInstance.url}" class="btn btn-primary app-list-link">
-                                    <#if currentUrlInstance.sui.menuImage?has_content>
-                                        <#if currentUrlInstance.sui.menuImageType == "icon">
-                                            <i class="${currentUrlInstance.sui.menuImage}" style="padding-right: 8px;"></i>
-                                        <#elseif currentUrlInstance.sui.menuImageType == "url-plain">
-                                            <img src="${currentUrlInstance.sui.menuImage}" width="18" style="padding-right: 4px;"/>
-                                        <#else>
-                                            <img src="${sri.buildUrl(currentUrlInstance.sui.menuImage).url}" height="18" style="padding-right: 4px;"/>
-                                        </#if>
-                                    <#else>
-                                        <i class="glyphicon glyphicon-link" style="padding-right: 8px;"></i>
-                                    </#if>
-                                    ${ec.resource.expand(currentSubscreensItem.menuTitle, "")}
-                                </a>
-                            ]]></text></render-mode>
-                        </widgets>
-                        <fail-widgets>
-                            <render-mode><text type="html"><![CDATA[<!-- excluding screen at path ${currentScreenPath} -->]]></text></render-mode>
-                        </fail-widgets>
-                    </section>
-                </widgets>
-            </section-iterate>
+            <section-iterate name="AppListIterate" list="appInfoList" entry="appInfo"><widgets>
+                <render-mode>
+                    <text type="html"><![CDATA[
+                    <a href="${appInfo.url}" class="btn btn-primary app-list-link">
+                        <#if appInfo.imageIcon?has_content>
+                            <i class="${appInfo.imageIcon}" style="padding-right: 8px;"></i>
+                        <#elseif appInfo.imageUrl?has_content>
+                            <img src="${appInfo.imageUrl}" height="18" style="padding-right: 4px;"/>
+                        <#else>
+                            <i class="glyphicon glyphicon-link" style="padding-right: 8px;"></i>
+                        </#if>
+                        ${appInfo.title}
+                    </a>
+                    ]]></text>
+                    <text type="ts"><![CDATA[
+                    <a href="{{appInfo.url}}" class="btn btn-primary app-list-link">
+                        <img *ngIf="appInfo.imageUrl" src="{{appInfo.imageUrl}}" height="18" style="padding-right: 4px;"/>
+                        <i *ngIf="appInfo.imageIcon" class="{{appInfo.imageIcon}}" style="padding-right: 8px;"></i>
+                        <i *ngIf="!appInfo.imageUrl && !appInfo.imageIcon" class="glyphicon glyphicon-link" style="padding-right: 8px;"></i>
+                        {{appInfo.title}}
+                    </a>
+                    ]]></text>
+                </render-mode>
+            </widgets></section-iterate>
 
             <label text="Choose wisely..." type="h5"/>
         </container>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-1.6.xsd"
+        default-menu-title="Example" default-menu-index="1" require-authentication="anonymous-all">
+
+    <parameter name="exampleId"/>
+
+    <transition name="newExample"><default-response url="."><parameter name="exampleId" value=""/></default-response></transition>
+    <transition name="updateExample"><service-call name="moqui.example.ExampleServices.updateExample"/>
+        <default-response url="."/></transition>
+    <transition name="edit"><path-parameter name="exampleId"/><default-response url=".">
+        <parameter name="exampleId" from="exampleId"/></default-response></transition>
+    <transition name="features"><path-parameter name="exampleId"/>
+        <default-response url="../EditExampleFeatureAppls">
+            <parameter name="exampleId" from="exampleId"/>
+            <parameter name="test" value="foo"/>
+        </default-response>
+    </transition>
+
+    <transition name="getExampleTypeEnumList">
+        <actions>
+            <entity-find entity-name="moqui.basic.Enumeration" list="exampleTypeEnumList">
+                <econdition field-name="enumTypeId" value="ExampleType"/>
+                <order-by field-name="description"/>
+            </entity-find>
+            <script>ec.web.sendJsonResponse(exampleTypeEnumList)</script>
+        </actions>
+        <default-response type="none"/>
+    </transition>
+
+    <actions>
+        <entity-find-one entity-name="moqui.example.Example" value-field="example"/>
+        <log message="EditExample exampleId [${exampleId}] example [${example}]"/>
+
+        <entity-find entity-name="ExampleStatusItem" list="exampleStatusItemList"/>
+    </actions>
+    <widgets>
+        <section name="ExampleMenu" condition="example"><widgets>
+            <link url="newExample" text="New Example" link-type="hidden-form" icon="glyphicon glyphicon-plus"/>
+        </widgets></section>
+
+        <form-single name="UpdateExample" transition="updateExample" map="example">
+            <auto-fields-service service-name="moqui.example.ExampleServices.create#Example"/>
+            <!-- for the auto-service, basically the entity and operation: <auto-fields-service service-name="create#Example"/> -->
+
+            <field name="exampleId"><default-field><display/></default-field></field>
+            <field name="exampleTypeEnumId">
+                <default-field title="Type" tooltip="This is the type of example">
+                    <auto-widget-entity entity-name="Example" field-type="edit"/>
+                    <!-- the auto-widget-entity element will basically produce this:
+                    <drop-down allow-empty="false">
+                        <entity-options text="${description}">
+                            <entity-find entity-name="moqui.basic.Enumeration">
+                                <econdition field-name="enumTypeId" value="ExampleType"/>
+                                <order-by field-name="description"/>
+                            </entity-find>
+                        </entity-options>
+                    </drop-down> -->
+                </default-field>
+            </field>
+            <field name="statusId">
+                <default-field title="Status" tooltip="This is the status of the example">
+                    <drop-down allow-empty="false" current-description="${example?.'Example#moqui.basic.StatusItem'?.description}">
+                        <list-options list="exampleStatusItemList" text="${description}"/>
+                        <!--
+                        <entity-options key="${toStatusId}" text="StatusTransitionNameTemplate">
+                            <entity-find entity-name="moqui.basic.StatusFlowTransitionToDetail">
+                                <econdition field-name="statusId" from="example.statusId"/>
+                            </entity-find>
+                        </entity-options>
+                        -->
+                    </drop-down>
+                </default-field>
+            </field>
+            <field name="exampleName"><default-field tooltip="The name of the example"><text-line/></default-field></field>
+            <field name="description"><default-field tooltip="The description of the example"><text-line/></default-field></field>
+            <!-- uncomment to see example of a render-mode embedded in a field:
+            <field name="testRenderMode"><default-field>
+                <render-mode><text type="html"><![CDATA[<span><div>This is test HTML text.</div><div>This is another line.</div></span>]]></text></render-mode>
+            </default-field></field>
+            -->
+            <field name="submitButton"><default-field title="Update"><submit/></default-field></field>
+
+            <field-layout collapsible="true">
+                <field-ref name="exampleId"/>
+                <fields-not-referenced/>
+                <field-row><field-ref name="exampleSize"/><field-ref name="exampleDate"/></field-row>
+                <field-row><field-ref name="testDate"/><field-ref name="testTime"/></field-row>
+
+                <field-group title="Special Fields">
+                    <field-ref name="auditedField"/>
+                    <field-ref name="encryptedField"/>
+                </field-group>
+                <field-group title="Validated Fields">
+                    <field-ref name="exampleEmail"/>
+                    <field-ref name="exampleUrl"/>
+                </field-group>
+
+                <!-- <field-ref name="testRenderMode"/> -->
+                <field-ref name="submitButton"/>
+            </field-layout>
+        </form-single>
+    </widgets>
+</screen>
